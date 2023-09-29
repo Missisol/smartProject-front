@@ -1,0 +1,19 @@
+version: '1'
+
+services:
+  frontend:
+    image: frontend
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - COMPOSE_PROJECT_NAME
+    container_name: frontend
+    profiles: ["frontend"]
+
+    restart: always
+
+    env_file: .env
+
+    ports: 
+      - '8080:8080'

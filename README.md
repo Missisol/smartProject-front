@@ -12,3 +12,8 @@ This example showcases Astro working with [Vue](https://v3.vuejs.org/).
 
 
 npm run dev -- --host 192.168.1.122
+
+
+docker run -p 8080:8080 frontend
+
+docker compose up frontend
