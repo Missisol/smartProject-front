@@ -1,36 +1,14 @@
 ---
 // Component Imports
 import BaseLayout from '../layouts/BaseLayout.astro';
-import BmeComponent from '../components/BmeComponent.vue';
+import BmeDataComponent from '../components/BmeDataComponent.vue';
+import BmeChartsComponent from '../components/BmeChartsComponent.vue';
 
 // Full Astro Component Syntax:
 // https://docs.astro.build/core-concepts/astro-components/
 ---
 
 <BaseLayout title="Index">
-	<BmeComponent client:visible></BmeComponent>
+	<BmeDataComponent client:visible></BmeDataComponent>
+	<BmeChartsComponent client:visible></BmeChartsComponent>
 </BaseLayout>
-
-<!-- <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<style>
-			html,
-			body {
-				font-family: system-ui;
-				margin: 0;
-			}
-			body {
-				padding: 2rem;
-			}
-		</style>
-	</head>
-	<body>
-		<main>
-			<Test client:visible></Test>
-		</main>
-	</body>
-</html> -->

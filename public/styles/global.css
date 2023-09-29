@@ -1,0 +1,44 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* body,
+h1,
+h2,
+h3,
+h4,
+p,
+ul[class],
+ol[class],
+li,
+figure,
+figcaption {
+  margin: 0;
+} */
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+:root {
+  --white: #fff;
+  --green: #3ba639;
+  --lightgreen: #aaffa9;
+  --blue: #047df3;
+  --mediumblue: #70b0ef;
+  --lightblue: #a6cdf3;
+  --grey: #808080;
+  --lightgrey: #cecece;
+  --red: #ff0000;
+  --lightred: #ef7985;
+  --gap: 1rem;
+}
+
+
