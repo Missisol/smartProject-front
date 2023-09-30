@@ -17,6 +17,7 @@ const { title } = Astro.props
     rel="stylesheet"
   />
     <link rel="stylesheet" href="/styles/global.css" />
+    <script is:inline src="/scripts/plotly-2.26.0.min.js" charset="utf-8"></script>
   </head>
   <body>
     <div class="container">
@@ -27,6 +28,7 @@ const { title } = Astro.props
       <a href="#">Contact</a>
     </nav>
     <div>
+      <h1 class="title">{ title }</h1>
       <slot /> <!-- your content is injected here -->
     </div>
     <Footer />
@@ -48,5 +50,10 @@ const { title } = Astro.props
 
 .container > * {
   grid-column: container;
+}
+
+.title {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
 }
 </style>

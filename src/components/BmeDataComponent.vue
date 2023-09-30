@@ -1,5 +1,4 @@
 <template>
-  <h1 class="title">BmeComponent</h1>
   <section class="section gauge">
     <div class="gauge__header">
       <div class="gauge__title-wrapper">
@@ -9,22 +8,22 @@
         <span id="local-date" class="title title--date"></span>
       </div>
       <div id="icon-wrapper" @click="togglePanel">
-        <i class="bx bx-grid-alt gauge__icon" v-if="isSimple"></i>
-        <i class="bx bx-list-ul gauge__icon" v-else></i>
+        <i class="bx bx-grid-alt gauge__icon" v-show="isSimple"></i>
+        <i class="bx bx-list-ul gauge__icon" v-show="!isSimple"></i>
       </div>
     </div>
-    <div class="wrapper gauge-wrapper" v-if="!isSimple">
+    <div class="wrapper gauge-wrapper" v-show="!isSimple">
       <div class="gauge__box">
-        <div id="temperature-gauge"></div>
+        <div id="temperature-gauge" ref="temperatureGaugeEl"></div>
       </div>
       <div class="gauge__box">
-        <div id="humidity-gauge"></div>
+        <div id="humidity-gauge" ref="humidityGaugeEl"></div>
       </div>
       <div class="gauge__box">
-        <div id="pressure-gauge"></div>
+        <div id="pressure-gauge" ref="pressureGaugeEl"></div>
       </div>
     </div>
-    <div class="wrapper box-wrapper" v-else>
+    <div class="wrapper box-wrapper" v-show="isSimple">
       <div class="box">
         <i class="bx bxs-thermometer readings"></i>
         <div class="box__content">
@@ -53,15 +52,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useFetch } from '../composables/fetch'
+import { gaugeDataArr, layout } from '../utils/plotlyData'
 
 const BASE_URL = import.meta.env.DEV 
   ? import.meta.env.PUBLIC_BASE_URL 
   : import.meta.env.SITE
 
 const url = ref(`${BASE_URL}/meteo/bme/`)
-const timer = 60 * 1000 * 5
+const timer = 60 * 1000
 // const timer = 60 * 1000 * 15
 const isSimple = ref(true)
+const temperatureGaugeEl = ref(null)
+const humidityGaugeEl = ref(null)
+const pressureGaugeEl = ref(null)
+const gaugeEls = ref(null)
 
 const { data, lastData, error } = useFetch(url)
 
@@ -74,41 +78,74 @@ function getPeriodicData() {
   }, timer)
 }
 
+getPeriodicData()
+
+
 function togglePanel() {
   isSimple.value = !isSimple.value
 }
 
-getPeriodicData()
+function getGaugePlotly() {
+
+  gaugeDataArr.forEach((data, idx) => {
+    const trace = [
+      {
+        type: "indicator",
+        mode: "gauge+number",
+        // mode: "gauge+number+delta",
+        // delta: { reference: data.reference },
+        title: { text: data.text },
+        gauge: {
+          axis: { range: data.range },
+          bar: { color: data.color},
+          steps: data.steps,
+          threshold: {
+            line: { color: "red", width: 4 },
+            thickness: 0.75,
+            value: data.value,
+          },
+        },
+      },
+    ]
+    Plotly.newPlot(gaugeEls.value[idx], trace, layout, {displayModeBar: false})
+  })
+};
+
+function updateGauge() {
+  const temperature_update = {
+    value: lastData?.value?.bme_temperature,
+  }
+  const humidity_update = {
+    value: lastData?.value?.bme_humidity,
+  }
+  const pressure_update = {
+    value: lastData?.value?.bme_pressure,
+  }
+
+  Plotly.update(temperatureGaugeEl.value, temperature_update);
+  Plotly.update(humidityGaugeEl.value, humidity_update);
+  Plotly.update(pressureGaugeEl.value, pressure_update);
+}
+
+
+function getUpdatedGaugePlotly() {
+    updateGauge() 
+    
+    setTimeout(() => {
+      updateGauge()
+
+      getUpdatedGaugePlotly()
+    }, 100000)
+}
 
 onMounted(() => {
-const temperatureGaugeDiv = document.getElementById("temperature-gauge");
-const humidityGaugeDiv = document.getElementById("humidity-gauge");
-const pressureGaugeDiv = document.getElementById("pressure-gauge");
-const gaugeDivs = [temperatureGaugeDiv, humidityGaugeDiv, pressureGaugeDiv] 
+  gaugeEls.value = [temperatureGaugeEl.value, humidityGaugeEl.value, pressureGaugeEl.value] 
+  getGaugePlotly()
+  setTimeout(() => {getUpdatedGaugePlotly()}, 500)
 })
 </script>
 
 <style scoped>
-/* Grid settings */
-.container {
-  display: grid;
-  grid-template-columns: 
-   1fr [container-start] minmax(0, 1200px) [container-end] 1fr;
-   gap: var(--gap);
-   padding-top: calc(var(--gap) * 2);
-   padding-bottom: calc(var(--gap) * 2);
-}
-
-.container > * {
-  grid-column: container;
-}
-
-.title {
-  font-family: 'Rubik', sans-serif;
-  font-weight: 400;
-}
-
-
 /* Header style */
 .header {
   display: flex;
